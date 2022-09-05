@@ -20,6 +20,13 @@ locals {
       "server" : var.argo_destination_server
       "namespace" : var.namespace
     }
+    "ignoreDifferences" : [{
+      "group" : "apiextensions.k8s.io"
+      "kind" : "CustomResourceDefinition"
+      "jqPathExpressions" : [
+        ".spec.names.shortNames"
+      ]
+    }]
     "syncPolicy" : var.crds_argo_sync_policy
     "info" : var.argo_info
   }
@@ -112,6 +119,10 @@ resource "helm_release" "control_plane_argo_application" {
     data.utils_deep_merge_yaml.control_plane_argo_helm_values[0].output,
     var.control_plane_argo_helm_values
   ]
+
+  depends_on = [
+    helm_release.crds_argo_application
+  ]
 }
 
 
@@ -167,4 +178,8 @@ resource "kubernetes_manifest" "control_plane_argo_application" {
   wait {
     fields = var.control_plane_argo_kubernetes_manifest_wait_fields
   }
+
+  depends_on = [
+    kubernetes_manifest.crds_argo_application
+  ]
 }
