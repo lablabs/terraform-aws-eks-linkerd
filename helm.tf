@@ -124,4 +124,8 @@ resource "helm_release" "control_plane" {
       binary_path = postrender.value
     }
   }
+
+  depends_on = [
+    helm_release.crds
+  ]
 }
