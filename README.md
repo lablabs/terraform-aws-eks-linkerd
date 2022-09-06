@@ -22,8 +22,16 @@ Check out other [terraform kubernetes addons](https://github.com/orgs/lablabs/re
 ### Helm
 Deploy helm chart by helm (default method, set `enabled = true`)
 
+> **Note**
+>
+> There is a static wait time between crds and control plane helm release which in a rare conditions might not be a bulletproof solution. Feel free to increase the wait time by setting `crds_helm_wait_for_crds_duration` variable to suits your needs.
+
 ### Argo kubernetes
 Deploy helm chart as argo application by kubernetes manifest (set `enabled = true` and `argo_enabled = true`)
+
+> **Note**
+>
+> We are leveraging `kubernetes_manifest` `wait` mechanism to observer ArgoCD `Application` status with these defaults, see `argo.tf:158`. Feel free to override these using `crds_argo_kubernetes_manifest_wait_fields` variable to suits your needs.
 
 ### Argo helm
 When deploying with ArgoCD application, Kubernetes terraform provider requires access to Kubernetes cluster API during plan time. This introduces potential issue when you want to deploy the cluster with this addon at the same time, during the same Terraform run.
@@ -31,6 +39,10 @@ When deploying with ArgoCD application, Kubernetes terraform provider requires a
 To overcome this issue, the module deploys the ArgoCD application object using the Helm provider, which does not require API access during plan. If you want to deploy the application using this workaround, you can set the `argo_helm_enabled` variable to `true`.
 
 Create helm release resource and deploy it as argo application (set `enabled = true`, `argo_enabled = true` and `argo_helm_enabled = true`)
+
+> **Note**
+>
+> There is a retry policy set on the control plane ArgoCD `Application`, see `argo.tf:89` to retry the installation of the control plane until crds are available which in a rare conditions might not be a bulletproof solution. Feel free to override these using `control_plane_argo_spec` variable to suits your needs.
 
 ## Examples
 
@@ -46,6 +58,7 @@ See [Basic example](examples/basic/README.md) for further information.
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.19.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.6.0 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.11.0 |
+| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.8.0 |
 | <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 0.17.0 |
 
 ## Modules
@@ -62,6 +75,7 @@ No modules.
 | [helm_release.crds_argo_application](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [kubernetes_manifest.control_plane_argo_application](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest) | resource |
 | [kubernetes_manifest.crds_argo_application](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest) | resource |
+| [time_sleep.wait_for_crds](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [utils_deep_merge_yaml.control_plane_argo_helm_values](https://registry.terraform.io/providers/cloudposse/utils/latest/docs/data-sources/deep_merge_yaml) | data source |
 | [utils_deep_merge_yaml.control_plane_values](https://registry.terraform.io/providers/cloudposse/utils/latest/docs/data-sources/deep_merge_yaml) | data source |
 | [utils_deep_merge_yaml.crds_argo_helm_values](https://registry.terraform.io/providers/cloudposse/utils/latest/docs/data-sources/deep_merge_yaml) | data source |
@@ -147,6 +161,7 @@ No modules.
 | <a name="input_crds_helm_skip_crds"></a> [crds\_helm\_skip\_crds](#input\_crds\_helm\_skip\_crds) | If set, no CRDs will be installed before helm release | `bool` | `false` | no |
 | <a name="input_crds_helm_timeout"></a> [crds\_helm\_timeout](#input\_crds\_helm\_timeout) | Time in seconds to wait for any individual kubernetes operation (like Jobs for hooks) | `number` | `300` | no |
 | <a name="input_crds_helm_wait"></a> [crds\_helm\_wait](#input\_crds\_helm\_wait) | Will wait until all helm release resources are in a ready state before marking the release as successful. It will wait for as long as timeout | `bool` | `false` | no |
+| <a name="input_crds_helm_wait_for_crds_duration"></a> [crds\_helm\_wait\_for\_crds\_duration](#input\_crds\_helm\_wait\_for\_crds\_duration) | Time duration to delay control plane helm release creation after crds helm release. For example, `30s` for 30 seconds or `5m` for 5 minutes. Updating this value by itself will not trigger a delay. | `string` | `"30s"` | no |
 | <a name="input_crds_helm_wait_for_jobs"></a> [crds\_helm\_wait\_for\_jobs](#input\_crds\_helm\_wait\_for\_jobs) | If wait is enabled, will wait until all helm Jobs have been completed before marking the release as successful. It will wait for as long as timeout | `bool` | `false` | no |
 | <a name="input_crds_settings"></a> [crds\_settings](#input\_crds\_settings) | Additional helm sets which will be passed to the Helm chart values, see https://artifacthub.io/packages/helm/linkerd2/linkerd2 | `map(any)` | `{}` | no |
 | <a name="input_crds_values"></a> [crds\_values](#input\_crds\_values) | Additional yaml encoded values which will be passed to the Helm chart, see https://artifacthub.io/packages/helm/linkerd2/linkerd2 | `string` | `""` | no |

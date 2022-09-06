@@ -168,6 +168,12 @@ variable "crds_helm_wait_for_jobs" {
   description = "If wait is enabled, will wait until all helm Jobs have been completed before marking the release as successful. It will wait for as long as timeout"
 }
 
+variable "crds_helm_wait_for_crds_duration" {
+  type        = string
+  default     = "30s"
+  description = "Time duration to delay control plane helm release creation after crds helm release. For example, `30s` for 30 seconds or `5m` for 5 minutes. Updating this value by itself will not trigger a delay."
+}
+
 variable "crds_helm_skip_crds" {
   type        = bool
   default     = false

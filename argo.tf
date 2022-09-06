@@ -75,7 +75,6 @@ data "utils_deep_merge_yaml" "crds_argo_helm_values" {
   ])
 }
 
-
 data "utils_deep_merge_yaml" "control_plane_argo_helm_values" {
   count = var.enabled && var.argo_enabled && var.argo_helm_enabled ? 1 : 0
   input = compact([
@@ -86,6 +85,20 @@ data "utils_deep_merge_yaml" "control_plane_argo_helm_values" {
       "spec" : local.control_plane_argo_application_values
     }),
     yamlencode({
+      "spec" : {
+        "syncPolicy" : {
+          "retry" : {
+            "limit" : 5
+            "backoff" : {
+              "duration" : "30s"
+              "factor" : 2
+              "maxDuration" : "3m0s"
+            }
+          }
+        }
+      }
+    }),
+    yamlencode({
       "spec" : var.control_plane_argo_spec
     }),
     yamlencode(
@@ -93,7 +106,6 @@ data "utils_deep_merge_yaml" "control_plane_argo_helm_values" {
     )
   ])
 }
-
 
 resource "helm_release" "crds_argo_application" {
   count = var.enabled && var.argo_enabled && var.argo_helm_enabled ? 1 : 0
@@ -119,12 +131,7 @@ resource "helm_release" "control_plane_argo_application" {
     data.utils_deep_merge_yaml.control_plane_argo_helm_values[0].output,
     var.control_plane_argo_helm_values
   ]
-
-  depends_on = [
-    helm_release.crds_argo_application
-  ]
 }
-
 
 resource "kubernetes_manifest" "crds_argo_application" {
   count = var.enabled && var.argo_enabled && !var.argo_helm_enabled ? 1 : 0
@@ -149,7 +156,14 @@ resource "kubernetes_manifest" "crds_argo_application" {
   }
 
   wait {
-    fields = var.crds_argo_kubernetes_manifest_wait_fields
+    fields = merge(
+      {
+        "status.sync.status"          = "Synced"
+        "status.health.status"        = "Healthy"
+        "status.operationState.phase" = "Succeeded"
+      },
+      var.crds_argo_kubernetes_manifest_wait_fields
+    )
   }
 }
 

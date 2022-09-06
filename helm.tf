@@ -62,6 +62,16 @@ resource "helm_release" "crds" {
   }
 }
 
+resource "time_sleep" "wait_for_crds" {
+  count = var.enabled && !var.argo_enabled ? 1 : 0
+
+  create_duration = var.crds_helm_wait_for_crds_duration
+
+  depends_on = [
+    helm_release.crds
+  ]
+}
+
 resource "helm_release" "control_plane" {
   count            = var.enabled && !var.argo_enabled ? 1 : 0
   chart            = var.control_plane_helm_chart_name
@@ -126,6 +136,6 @@ resource "helm_release" "control_plane" {
   }
 
   depends_on = [
-    helm_release.crds
+    time_sleep.wait_for_crds[0]
   ]
 }
