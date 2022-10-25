@@ -8,7 +8,7 @@ variable "control_plane_helm_chart_name" {
 
 variable "control_plane_helm_chart_version" {
   type        = string
-  default     = "1.9.0"
+  default     = "1.9.4"
   description = "Version of the Helm chart"
 }
 
@@ -33,11 +33,13 @@ variable "control_plane_values" {
 # ================ argo variables (required) ================
 
 variable "control_plane_argo_sync_policy" {
+  type        = any
   description = "ArgoCD syncPolicy manifest parameter"
   default     = {}
 }
 
 variable "control_plane_argo_metadata" {
+  type = any
   default = {
     "finalizers" : [
       "resources-finalizer.argocd.argoproj.io"
@@ -47,6 +49,7 @@ variable "control_plane_argo_metadata" {
 }
 
 variable "control_plane_argo_spec" {
+  type        = any
   default     = {}
   description = "ArgoCD Application spec configuration. Override or create additional spec parameters"
 }
@@ -66,6 +69,7 @@ variable "control_plane_argo_kubernetes_manifest_computed_fields" {
 }
 
 variable "control_plane_argo_kubernetes_manifest_field_manager_name" {
+  type        = string
   default     = "Terraform"
   description = "The name of the field manager to use when applying the kubernetes manifest resource. Defaults to Terraform"
 }
