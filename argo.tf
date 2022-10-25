@@ -158,9 +158,8 @@ resource "kubernetes_manifest" "crds_argo_application" {
   wait {
     fields = merge(
       {
-        "status.sync.status"          = "Synced"
-        "status.health.status"        = "Healthy"
-        "status.operationState.phase" = "Succeeded"
+        "status.sync.status"   = "Synced"
+        "status.health.status" = "Healthy"
       },
       var.crds_argo_kubernetes_manifest_wait_fields
     )
