@@ -33,6 +33,7 @@ module "addon_installation_helm" {
   control_plane_values = local.values
 }
 
+# Please, see README.md and Argo Kubernetes deployment method for implications of using Kubernetes installation method
 module "addon_installation_argo_kubernetes" {
   source = "../../"
 
