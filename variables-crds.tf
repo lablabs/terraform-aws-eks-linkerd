@@ -33,11 +33,13 @@ variable "crds_values" {
 # ================ argo variables (required) ================
 
 variable "crds_argo_sync_policy" {
+  type        = any
   description = "ArgoCD syncPolicy manifest parameter"
   default     = {}
 }
 
 variable "crds_argo_metadata" {
+  type = any
   default = {
     "finalizers" : [
       "resources-finalizer.argocd.argoproj.io"
@@ -47,6 +49,7 @@ variable "crds_argo_metadata" {
 }
 
 variable "crds_argo_spec" {
+  type        = any
   default     = {}
   description = "ArgoCD Application spec configuration. Override or create additional spec parameters"
 }
@@ -66,6 +69,7 @@ variable "crds_argo_kubernetes_manifest_computed_fields" {
 }
 
 variable "crds_argo_kubernetes_manifest_field_manager_name" {
+  type        = string
   default     = "Terraform"
   description = "The name of the field manager to use when applying the kubernetes manifest resource. Defaults to Terraform"
 }

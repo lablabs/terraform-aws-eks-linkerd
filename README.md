@@ -1,6 +1,6 @@
 # AWS EKS Linkerd Terraform module
 
-[![labyrinth labs logo](ll-logo.png)](https://lablabs.io/)
+[<img src="https://lablabs.io/static/ll-logo.png" width=350px>](https://lablabs.io/)
 
 We help companies build, run, deploy and scale software and infrastructure by embracing the right technologies and principles. Check out our website at https://lablabs.io/
 
@@ -11,7 +11,7 @@ We help companies build, run, deploy and scale software and infrastructure by em
 
 ## Description
 
-A terraform module to deploy the [linkerd2](https://linkerd.io) on Amazon EKS cluster.
+A Terraform module to deploy the [linkerd2](https://linkerd.io) on Amazon EKS cluster.
 
 ## Related Projects
 
@@ -20,25 +20,27 @@ Check out other [terraform kubernetes addons](https://github.com/orgs/lablabs/re
 ## Deployment methods
 
 ### Helm
-Deploy helm chart by helm (default method, set `enabled = true`)
+Deploy Helm chart via Helm resource (default method, set `enabled = true`)
 
 > **Note**
 >
 > There is a static wait time between crds and control plane helm release which in a rare conditions might not be a bulletproof solution. Feel free to increase the wait time by setting `crds_helm_wait_for_crds_duration` variable to suits your needs.
 
-### Argo kubernetes
-Deploy helm chart as argo application by kubernetes manifest (set `enabled = true` and `argo_enabled = true`)
+### Argo Kubernetes
+Deploy Helm chart as ArgoCD Application via Kubernetes manifest resource (set `enabled = true` and `argo_enabled = true`)
 
 > **Note**
 >
 > We are leveraging `kubernetes_manifest` `wait` mechanism to observer ArgoCD `Application` status with these defaults, see `argo.tf:158`. Feel free to override these using `crds_argo_kubernetes_manifest_wait_fields` variable to suits your needs.
 
-### Argo helm
-When deploying with ArgoCD application, Kubernetes terraform provider requires access to Kubernetes cluster API during plan time. This introduces potential issue when you want to deploy the cluster with this addon at the same time, during the same Terraform run.
+> **Warning**
+>
+> When deploying with ArgoCD application, Kubernetes terraform provider requires access to Kubernetes cluster API during plan time. This introduces potential issue when you want to deploy the cluster with this addon at the same time, during the same Terraform run.
+>
+> To overcome this issue, the module deploys the ArgoCD application object using the Helm provider, which does not require API access during plan. If you want to deploy the application using this workaround, you can set the `argo_helm_enabled` variable to `true`.
 
-To overcome this issue, the module deploys the ArgoCD application object using the Helm provider, which does not require API access during plan. If you want to deploy the application using this workaround, you can set the `argo_helm_enabled` variable to `true`.
-
-Create helm release resource and deploy it as argo application (set `enabled = true`, `argo_enabled = true` and `argo_helm_enabled = true`)
+### Argo Helm
+Deploy Helm chart as ArgoCD Application via Helm resource (set `enabled = true`, `argo_enabled = true` and `argo_helm_enabled = true`)
 
 > **Note**
 >
@@ -89,7 +91,7 @@ No modules.
 | <a name="input_argo_destination_server"></a> [argo\_destination\_server](#input\_argo\_destination\_server) | Destination server for ArgoCD Application | `string` | `"https://kubernetes.default.svc"` | no |
 | <a name="input_argo_enabled"></a> [argo\_enabled](#input\_argo\_enabled) | If set to true, the module will be deployed as ArgoCD application, otherwise it will be deployed as a Helm release | `bool` | `false` | no |
 | <a name="input_argo_helm_enabled"></a> [argo\_helm\_enabled](#input\_argo\_helm\_enabled) | If set to true, the ArgoCD Application manifest will be deployed using Kubernetes provider as a Helm release. Otherwise it'll be deployed as a Kubernetes manifest. See Readme for more info | `bool` | `false` | no |
-| <a name="input_argo_info"></a> [argo\_info](#input\_argo\_info) | ArgoCD info manifest parameter | `list` | <pre>[<br>  {<br>    "name": "terraform",<br>    "value": "true"<br>  }<br>]</pre> | no |
+| <a name="input_argo_info"></a> [argo\_info](#input\_argo\_info) | ArgoCD info manifest parameter | <pre>list(object({<br>    name  = string<br>    value = string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "terraform",<br>    "value": "true"<br>  }<br>]</pre> | no |
 | <a name="input_argo_namespace"></a> [argo\_namespace](#input\_argo\_namespace) | Namespace to deploy ArgoCD application CRD to | `string` | `"argo"` | no |
 | <a name="input_argo_project"></a> [argo\_project](#input\_argo\_project) | ArgoCD Application project | `string` | `"default"` | no |
 | <a name="input_control_plane_argo_helm_values"></a> [control\_plane\_argo\_helm\_values](#input\_control\_plane\_argo\_helm\_values) | Value overrides to use when deploying argo application object with helm | `string` | `""` | no |
@@ -97,12 +99,12 @@ No modules.
 | <a name="input_control_plane_argo_kubernetes_manifest_field_manager_force_conflicts"></a> [control\_plane\_argo\_kubernetes\_manifest\_field\_manager\_force\_conflicts](#input\_control\_plane\_argo\_kubernetes\_manifest\_field\_manager\_force\_conflicts) | Forcibly override any field manager conflicts when applying the kubernetes manifest resource | `bool` | `false` | no |
 | <a name="input_control_plane_argo_kubernetes_manifest_field_manager_name"></a> [control\_plane\_argo\_kubernetes\_manifest\_field\_manager\_name](#input\_control\_plane\_argo\_kubernetes\_manifest\_field\_manager\_name) | The name of the field manager to use when applying the kubernetes manifest resource. Defaults to Terraform | `string` | `"Terraform"` | no |
 | <a name="input_control_plane_argo_kubernetes_manifest_wait_fields"></a> [control\_plane\_argo\_kubernetes\_manifest\_wait\_fields](#input\_control\_plane\_argo\_kubernetes\_manifest\_wait\_fields) | A map of fields and a corresponding regular expression with a pattern to wait for. The provider will wait until the field matches the regular expression. Use * for any value. | `map(string)` | `{}` | no |
-| <a name="input_control_plane_argo_metadata"></a> [control\_plane\_argo\_metadata](#input\_control\_plane\_argo\_metadata) | ArgoCD Application metadata configuration. Override or create additional metadata parameters | `map` | <pre>{<br>  "finalizers": [<br>    "resources-finalizer.argocd.argoproj.io"<br>  ]<br>}</pre> | no |
-| <a name="input_control_plane_argo_spec"></a> [control\_plane\_argo\_spec](#input\_control\_plane\_argo\_spec) | ArgoCD Application spec configuration. Override or create additional spec parameters | `map` | `{}` | no |
-| <a name="input_control_plane_argo_sync_policy"></a> [control\_plane\_argo\_sync\_policy](#input\_control\_plane\_argo\_sync\_policy) | ArgoCD syncPolicy manifest parameter | `map` | `{}` | no |
+| <a name="input_control_plane_argo_metadata"></a> [control\_plane\_argo\_metadata](#input\_control\_plane\_argo\_metadata) | ArgoCD Application metadata configuration. Override or create additional metadata parameters | `any` | <pre>{<br>  "finalizers": [<br>    "resources-finalizer.argocd.argoproj.io"<br>  ]<br>}</pre> | no |
+| <a name="input_control_plane_argo_spec"></a> [control\_plane\_argo\_spec](#input\_control\_plane\_argo\_spec) | ArgoCD Application spec configuration. Override or create additional spec parameters | `any` | `{}` | no |
+| <a name="input_control_plane_argo_sync_policy"></a> [control\_plane\_argo\_sync\_policy](#input\_control\_plane\_argo\_sync\_policy) | ArgoCD syncPolicy manifest parameter | `any` | `{}` | no |
 | <a name="input_control_plane_helm_atomic"></a> [control\_plane\_helm\_atomic](#input\_control\_plane\_helm\_atomic) | If set, installation process purges chart on fail. The wait flag will be set automatically if atomic is used | `bool` | `false` | no |
 | <a name="input_control_plane_helm_chart_name"></a> [control\_plane\_helm\_chart\_name](#input\_control\_plane\_helm\_chart\_name) | Helm chart name to be installed | `string` | `"linkerd-control-plane"` | no |
-| <a name="input_control_plane_helm_chart_version"></a> [control\_plane\_helm\_chart\_version](#input\_control\_plane\_helm\_chart\_version) | Version of the Helm chart | `string` | `"1.9.0"` | no |
+| <a name="input_control_plane_helm_chart_version"></a> [control\_plane\_helm\_chart\_version](#input\_control\_plane\_helm\_chart\_version) | Version of the Helm chart | `string` | `"1.9.4"` | no |
 | <a name="input_control_plane_helm_cleanup_on_fail"></a> [control\_plane\_helm\_cleanup\_on\_fail](#input\_control\_plane\_helm\_cleanup\_on\_fail) | Allow deletion of new resources created in this helm upgrade when upgrade fails | `bool` | `false` | no |
 | <a name="input_control_plane_helm_dependency_update"></a> [control\_plane\_helm\_dependency\_update](#input\_control\_plane\_helm\_dependency\_update) | Runs helm dependency update before installing the chart | `bool` | `false` | no |
 | <a name="input_control_plane_helm_description"></a> [control\_plane\_helm\_description](#input\_control\_plane\_helm\_description) | Set helm release description attribute (visible in the history) | `string` | `""` | no |
@@ -133,9 +135,9 @@ No modules.
 | <a name="input_crds_argo_kubernetes_manifest_field_manager_force_conflicts"></a> [crds\_argo\_kubernetes\_manifest\_field\_manager\_force\_conflicts](#input\_crds\_argo\_kubernetes\_manifest\_field\_manager\_force\_conflicts) | Forcibly override any field manager conflicts when applying the kubernetes manifest resource | `bool` | `false` | no |
 | <a name="input_crds_argo_kubernetes_manifest_field_manager_name"></a> [crds\_argo\_kubernetes\_manifest\_field\_manager\_name](#input\_crds\_argo\_kubernetes\_manifest\_field\_manager\_name) | The name of the field manager to use when applying the kubernetes manifest resource. Defaults to Terraform | `string` | `"Terraform"` | no |
 | <a name="input_crds_argo_kubernetes_manifest_wait_fields"></a> [crds\_argo\_kubernetes\_manifest\_wait\_fields](#input\_crds\_argo\_kubernetes\_manifest\_wait\_fields) | A map of fields and a corresponding regular expression with a pattern to wait for. The provider will wait until the field matches the regular expression. Use * for any value. | `map(string)` | `{}` | no |
-| <a name="input_crds_argo_metadata"></a> [crds\_argo\_metadata](#input\_crds\_argo\_metadata) | ArgoCD Application metadata configuration. Override or create additional metadata parameters | `map` | <pre>{<br>  "finalizers": [<br>    "resources-finalizer.argocd.argoproj.io"<br>  ]<br>}</pre> | no |
-| <a name="input_crds_argo_spec"></a> [crds\_argo\_spec](#input\_crds\_argo\_spec) | ArgoCD Application spec configuration. Override or create additional spec parameters | `map` | `{}` | no |
-| <a name="input_crds_argo_sync_policy"></a> [crds\_argo\_sync\_policy](#input\_crds\_argo\_sync\_policy) | ArgoCD syncPolicy manifest parameter | `map` | `{}` | no |
+| <a name="input_crds_argo_metadata"></a> [crds\_argo\_metadata](#input\_crds\_argo\_metadata) | ArgoCD Application metadata configuration. Override or create additional metadata parameters | `any` | <pre>{<br>  "finalizers": [<br>    "resources-finalizer.argocd.argoproj.io"<br>  ]<br>}</pre> | no |
+| <a name="input_crds_argo_spec"></a> [crds\_argo\_spec](#input\_crds\_argo\_spec) | ArgoCD Application spec configuration. Override or create additional spec parameters | `any` | `{}` | no |
+| <a name="input_crds_argo_sync_policy"></a> [crds\_argo\_sync\_policy](#input\_crds\_argo\_sync\_policy) | ArgoCD syncPolicy manifest parameter | `any` | `{}` | no |
 | <a name="input_crds_helm_atomic"></a> [crds\_helm\_atomic](#input\_crds\_helm\_atomic) | If set, installation process purges chart on fail. The wait flag will be set automatically if atomic is used | `bool` | `false` | no |
 | <a name="input_crds_helm_chart_name"></a> [crds\_helm\_chart\_name](#input\_crds\_helm\_chart\_name) | Helm chart name to be installed | `string` | `"linkerd-crds"` | no |
 | <a name="input_crds_helm_chart_version"></a> [crds\_helm\_chart\_version](#input\_crds\_helm\_chart\_version) | Version of the Helm chart | `string` | `"1.4.0"` | no |
