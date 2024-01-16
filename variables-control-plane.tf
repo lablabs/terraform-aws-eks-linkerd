@@ -8,7 +8,7 @@ variable "control_plane_helm_chart_name" {
 
 variable "control_plane_helm_chart_version" {
   type        = string
-  default     = "1.9.4"
+  default     = "1.16.9"
   description = "Version of the Helm chart"
 }
 
@@ -64,7 +64,7 @@ variable "control_plane_argo_helm_values" {
 
 variable "control_plane_argo_kubernetes_manifest_computed_fields" {
   type        = list(string)
-  default     = ["metadata.labels", "metadata.annotations"]
+  default     = ["metadata.labels", "metadata.annotations", "metadata.finalizers"]
   description = "List of paths of fields to be handled as \"computed\". The user-configured value for the field will be overridden by any different value returned by the API after apply."
 }
 
@@ -170,12 +170,6 @@ variable "control_plane_helm_wait_for_jobs" {
   type        = bool
   default     = false
   description = "If wait is enabled, will wait until all helm Jobs have been completed before marking the release as successful. It will wait for as long as timeout"
-}
-
-variable "control_plane_helm_skip_crds" {
-  type        = bool
-  default     = false
-  description = "If set, no CRDs will be installed before helm release"
 }
 
 variable "control_plane_helm_render_subchart_notes" {
