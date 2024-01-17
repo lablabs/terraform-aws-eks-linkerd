@@ -26,7 +26,6 @@ resource "helm_release" "crds" {
   atomic                     = var.crds_helm_atomic
   wait                       = var.crds_helm_wait
   wait_for_jobs              = var.crds_helm_wait_for_jobs
-  skip_crds                  = var.crds_helm_skip_crds
   render_subchart_notes      = var.crds_helm_render_subchart_notes
   disable_openapi_validation = var.crds_helm_disable_openapi_validation
   dependency_update          = var.crds_helm_dependency_update
@@ -62,16 +61,6 @@ resource "helm_release" "crds" {
   }
 }
 
-resource "time_sleep" "wait_for_crds" {
-  count = var.enabled && !var.argo_enabled ? 1 : 0
-
-  create_duration = var.crds_helm_wait_for_crds_duration
-
-  depends_on = [
-    helm_release.crds
-  ]
-}
-
 resource "helm_release" "control_plane" {
   count            = var.enabled && !var.argo_enabled ? 1 : 0
   chart            = var.control_plane_helm_chart_name
@@ -100,7 +89,7 @@ resource "helm_release" "control_plane" {
   atomic                     = var.control_plane_helm_atomic
   wait                       = var.control_plane_helm_wait
   wait_for_jobs              = var.control_plane_helm_wait_for_jobs
-  skip_crds                  = var.control_plane_helm_skip_crds
+  skip_crds                  = true # CRDs are installed in a separate Helm release
   render_subchart_notes      = var.control_plane_helm_render_subchart_notes
   disable_openapi_validation = var.control_plane_helm_disable_openapi_validation
   dependency_update          = var.control_plane_helm_dependency_update
@@ -134,8 +123,4 @@ resource "helm_release" "control_plane" {
       binary_path = postrender.value
     }
   }
-
-  depends_on = [
-    time_sleep.wait_for_crds[0]
-  ]
 }
