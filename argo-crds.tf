@@ -11,11 +11,15 @@ locals {
       "repoURL" : var.helm_repo_url
       "chart" : var.crds_helm_chart_name
       "targetRevision" : var.crds_helm_chart_version
-      "helm" : {
-        "releaseName" : var.crds_helm_release_name
-        "parameters" : length(var.crds_settings) == 0 ? null : [for k, v in var.crds_settings : tomap({ "forceString" : true, "name" : k, "value" : v })]
-        "values" : var.enabled ? data.utils_deep_merge_yaml.crds_values[0].output : ""
-      }
+      "helm" : merge(
+        {
+          "releaseName" : var.crds_helm_release_name
+          "values" : var.enabled ? data.utils_deep_merge_yaml.crds_values[0].output : ""
+        },
+        length(var.crds_settings) > 0 ? {
+          "parameters" : [for k, v in var.crds_settings : tomap({ "forceString" : true, "name" : k, "value" : v })]
+        } : {}
+      )
     }
     "destination" : {
       "server" : var.argo_destination_server
