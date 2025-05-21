@@ -11,10 +11,6 @@ locals {
       }
     }
   })
-  sync_policy = {
-    automated   = {}
-    syncOptions = ["CreateNamespace=true"]
-  }
 }
 
 module "addon_installation_disabled" {
@@ -30,7 +26,7 @@ module "addon_installation_helm" {
   argo_enabled      = false
   argo_helm_enabled = false
 
-  control_plane_values = local.values
+  values = local.values
 }
 
 # Please, see README.md and Argo Kubernetes deployment method for implications of using Kubernetes installation method
@@ -41,11 +37,14 @@ module "addon_installation_argo_kubernetes" {
   argo_enabled      = true
   argo_helm_enabled = false
 
-  control_plane_values = local.values
+  values = local.values
 
-  crds_argo_sync_policy          = local.sync_policy
-  control_plane_argo_sync_policy = local.sync_policy
+  argo_sync_policy = {
+    automated   = {}
+    syncOptions = ["CreateNamespace=true"]
+  }
 }
+
 
 module "addon_installation_argo_helm" {
   source = "../../"
@@ -54,8 +53,10 @@ module "addon_installation_argo_helm" {
   argo_enabled      = true
   argo_helm_enabled = true
 
-  control_plane_values = local.values
+  values = local.values
 
-  crds_argo_sync_policy          = local.sync_policy
-  control_plane_argo_sync_policy = local.sync_policy
+  argo_sync_policy = {
+    automated   = {}
+    syncOptions = ["CreateNamespace=true"]
+  }
 }
