@@ -50,7 +50,7 @@ See [basic example](examples/basic) for further information.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_addon"></a> [addon](#module\_addon) | git::https://github.com/lablabs/terraform-aws-eks-universal-addon.git//modules/addon | v0.0.18 |
+| <a name="module_addon"></a> [addon](#module\_addon) | git::https://github.com/lablabs/terraform-aws-eks-universal-addon.git//modules/addon | v0.0.21 |
 | <a name="module_crds"></a> [crds](#module\_crds) | git::https://github.com/lablabs/terraform-aws-eks-universal-addon.git//modules/addon | v0.0.18 |
 ## Resources
 
