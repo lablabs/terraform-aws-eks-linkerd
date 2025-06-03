@@ -2,7 +2,7 @@ locals {
   crds_enabled = var.enabled && var.crds_enabled
 
   crds_argo_source_type         = var.crds_argo_source_type != null ? var.crds_argo_source_type : try(local.crds.argo_source_type, "helm")
-  crds_argo_source_helm_enabled = local.crds_argo_source_type == "helm"
+  crds_argo_source_helm_enabled = local.crds_argo_source_type == "helm" || local.crds_argo_source_type == "helm-directory"
 
   crds_argo_name         = var.crds_argo_name != null ? var.crds_argo_name : try(local.crds.argo_name, local.crds.name)
   crds_helm_release_name = var.crds_helm_release_name != null ? var.crds_helm_release_name : try(local.crds.helm_release_name, local.crds.name)
@@ -11,7 +11,7 @@ locals {
 }
 
 module "crds" {
-  source = "git::https://github.com/lablabs/terraform-aws-eks-universal-addon.git//modules/addon?ref=v0.0.18"
+  source = "git::https://github.com/lablabs/terraform-aws-eks-universal-addon.git//modules/addon?ref=v0.0.21"
 
   enabled = local.crds_enabled
 

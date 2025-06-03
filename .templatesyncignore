@@ -10,3 +10,4 @@ addon-irsa.tf
 addon-oidc.tf
 .github/workflows/renovate.yaml
 renovate.json
+.pre-commit-config.yaml
