@@ -1,7 +1,7 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     # renovate: datasource=github-tags depName=pre-commit/pre-commit-hooks
-    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b # v5.0.0 # pragma: allowlist secret
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0 # pragma: allowlist secret
     hooks:
       - id: trailing-whitespace
         args: ["--markdown-linebreak-ext=md"]
@@ -14,13 +14,12 @@ repos:
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     # renovate: datasource=github-releases depName=antonbabenko/pre-commit-terraform
-    rev: 2f8bda194a420ad77a050a9de627d77a74841fdc # v1.99.4 # pragma: allowlist secret
+    rev: d0e12caebb2ab0ee8bf98181c8bfe9702bca103d # v1.105.0 # pragma: allowlist secret
     hooks:
-      - id: terraform_validate
       - id: terraform_fmt
       - id: terraform_providers_lock
         args:
-          - --hook-config=--mode=only-check-is-current-lockfile-cross-platform
+          - --hook-config=--mode=check-lockfile-is-cross-platform
           - --args=-platform=darwin_amd64
           - --args=-platform=darwin_arm64
           - --args=-platform=linux_amd64
@@ -33,7 +32,7 @@ repos:
 
   - repo: https://github.com/lablabs/luactl
     # renovate: datasource=github-tags depName=lablabs/luactl
-    rev: 818d633e5f41c26a47bb31307535de89c6aba73d # v0.0.1 # pragma: allowlist secret
+    rev: 8853756704da1483a1c88827f0ee09e4caf4acc6 # v0.0.2 # pragma: allowlist secret
     hooks:
       - id: sync # should be run before terraform_docs
         name: Luactl sync variables
@@ -41,7 +40,7 @@ repos:
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     # renovate: datasource=github-releases depName=antonbabenko/pre-commit-terraform
-    rev: 55d0143972eec4905fdaea2f444f1e88218f9dce # v1.96.3 # pragma: allowlist secret
+    rev: d0e12caebb2ab0ee8bf98181c8bfe9702bca103d # v1.105.0 # pragma: allowlist secret
     hooks:
       - id: terraform_docs # should be run after luactl sync
         args:
@@ -55,8 +54,8 @@ repos:
         args: ["--baseline", ".secrets.baseline"]
         exclude: terraform.tfstate
 
-  - repo: https://github.com/woodruffw/zizmor-pre-commit
-    # renovate: datasource=github-releases depName=woodruffw/zizmor-pre-commit
-    rev: 07a06156e31897fbb5ba0e22a961e8e3c2a0677b # v1.16.0 # pragma: allowlist secret
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    # renovate: datasource=github-releases depName=zizmorcore/zizmor-pre-commit
+    rev: 7fc963270df722f37707d47ff41265fe8f460822 # v1.20.0 # pragma: allowlist secret
     hooks:
       - id: zizmor
