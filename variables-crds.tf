@@ -1,4 +1,8 @@
-# IMPORTANT: This file is synced with the "terraform-aws-eks-universal-addon" module. Any changes to this file might be overwritten upon the next release of that module.
+variable "crds_enabled" {
+  type        = bool
+  default     = true
+  description = "Set to false to prevent the module from creating CRD resources."
+}
 
 variable "crds_helm_enabled" {
   type        = bool
@@ -376,4 +380,10 @@ variable "crds_helm_postrender" {
   type        = map(any)
   default     = null
   description = "Value block with a path to a binary file to run after Helm renders the manifest which can alter the manifest contents. Defaults to `{}`."
+}
+
+variable "crds_depends_on" {
+  type        = any
+  default     = null
+  description = "List of resources to wait for before installing the addon. Typically used to force a dependency on another addon."
 }
