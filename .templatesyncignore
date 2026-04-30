@@ -3,12 +3,9 @@ tests
 examples/basic/main.tf
 main.tf
 variables.tf
-variables-addon-irsa.tf
-variables-addon-oidc.tf
 README.md
 .secrets.baseline
-addon-irsa.tf
-addon-oidc.tf
 .github/workflows/renovate.yaml
 renovate.json
-.pre-commit-config.yaml
+migrations.tf
+.templatesyncignore.local
